@@ -1,4 +1,4 @@
-package com.example.counting_center.entities;
+package com.example.counting_center.messages;
 
 import com.sun.istack.NotNull;
 import lombok.Getter;
@@ -9,5 +9,5 @@ public class BaseMessage<T> {
     private T message;
 
     @NotNull
-    private String hash;
+    private String signature;
 }

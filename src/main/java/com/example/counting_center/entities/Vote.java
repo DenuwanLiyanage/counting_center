@@ -2,15 +2,15 @@ package com.example.counting_center.entities;
 
 import com.sun.istack.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="votes")
 @Getter
 public class Vote {
     private @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     Long id;
 
     @NotNull
@@ -19,12 +19,10 @@ public class Vote {
     @NotNull
     private String votedFor;
 
-    public Vote() {
-    }
+    @Setter
+    private boolean accepted;
 
-    public Vote(String ballotId, String votedFor) {
-        this.ballotId = ballotId;
-        this.votedFor = votedFor;
+    public Vote() {
     }
 
     public String getHash() {
@@ -34,6 +32,7 @@ public class Vote {
 
     @Override
     public String toString() {
-        return "Vote{" + "id=" + id + ", ballotId='" + ballotId + ", votedFor='" + votedFor + '}';
+        return "Vote{" + "id=" + id + ", ballotId=" + ballotId + ", votedFor=" + votedFor + ", accepted=" + accepted +
+                "}";
     }
 }
