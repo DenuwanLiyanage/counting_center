@@ -1,7 +1,7 @@
 package com.example.counting_center.util;
 
 public class ErrorMessageCode {
-    public static final String INVALID_REQUEST = "INVALID_MESSAGE";
+    public static final String INVALID_REQUEST = "INVALID_REQUEST";
 
     public static final String INVALID_SIGNATURE = "INVALID_SIGNATURE";
 

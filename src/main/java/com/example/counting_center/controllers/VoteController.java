@@ -4,6 +4,7 @@ import com.example.counting_center.messages.*;
 import com.example.counting_center.entities.Vote;
 import com.example.counting_center.repositories.VoteRepository;
 import com.example.counting_center.util.ErrorMessageCode;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,7 @@ public class VoteController {
         createSecureConnection();
 
         // TODO: send ballotId to voting center and check its status
+
         ValidateBallotIdRequest request = new ValidateBallotIdRequest(vote.getBallotId());
         ValidateBallotIdResponse response = new ValidateBallotIdResponse(vote.getBallotId(), "1231412");
 
