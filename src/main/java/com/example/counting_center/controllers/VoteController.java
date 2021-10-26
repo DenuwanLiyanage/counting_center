@@ -9,6 +9,7 @@ import com.example.counting_center.util.AESHelper;
 import com.example.counting_center.util.ErrorMessageCode;
 import com.example.counting_center.util.Keys;
 import com.example.counting_center.util.RSA;
+import com.example.counting_center.util.Keys;
 import com.example.counting_center.web_clients.BallotIdVerificationWebClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,15 @@ public class VoteController {
      */
     @GetMapping("/votes")
     ResponseEntity<?> voteGet() {
-        return ResponseEntity.status(200).body(voteRepository.findAll());
+        try{
+            log.info("Getting all votes");
+            return ResponseEntity.status(200).body(voteRepository.findAll());
+        }catch (Exception e){
+            log.error("Can't Get all Votes");
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
+        }
+
     }
 
 
@@ -84,12 +93,17 @@ public class VoteController {
                     .body(new ErrorResponse(ErrorMessageCode.INVALID_REQUEST));
         }
 
+        if (isAccepted(voteRequest.getBallotID())){
+            log.error("Cannot vote for this ballot ID");
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse(ErrorMessageCode.INVALID_REQUEST));
+        }
+
 
         boolean isSignatureValid = rsa.varifySignature(
                 voteRequest.getSignature(),
                 voteRequest.getBallotID() + voteRequest.getVoteFor(),
                 Keys.getVotingCenterCertificate());
-
         if (!isSignatureValid) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(ErrorMessageCode.INVALID_SIGNATURE));
@@ -99,6 +113,7 @@ public class VoteController {
         try {
             vote = voteRepository.save(vote);
         } catch (Exception e) {
+            log.error("unable to save Vote");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
@@ -110,9 +125,12 @@ public class VoteController {
 //        try{
 //            ValidateBallotIdResponse response1 = ballotIdVerificationWebClient.getVerifiedBallotId(request);
 //        }catch (Exception e){
+//        log.info("unable to Connect to voting center");
 //            return ResponseEntity.internalServerError()
 //                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
 //        }
+
+
         // TODO: validate response
         boolean isValidBallotID = true;
         if (!isValidBallotID) {
@@ -126,10 +144,11 @@ public class VoteController {
         try {
             vote = voteRepository.save(vote);
         } catch (Exception e) {
+            log.error("unable to save Vote");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
-
+        log.info("Successfully Voted");
         return ResponseEntity.ok().body(new VoteSuccessResponse(vote.getReceipt()));
     }
 
@@ -146,4 +165,10 @@ public class VoteController {
         return ResponseEntity.ok().body("");
     }
 
+    boolean isAccepted(String ballotID){
+        if(voteRepository.countAllByBallotIdAndAcceptedTrue(ballotID) == 0) {
+            return false;
+        }
+        return true;
+    }
 }
