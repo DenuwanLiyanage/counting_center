@@ -1,15 +1,16 @@
 package com.example.counting_center.controllers;
 
+import com.example.counting_center.entities.Election;
 import com.example.counting_center.entities.Session;
 import com.example.counting_center.entities.Vote;
 import com.example.counting_center.messages.*;
+import com.example.counting_center.repositories.ElectionRepository;
 import com.example.counting_center.repositories.SessionRepository;
 import com.example.counting_center.repositories.VoteRepository;
 import com.example.counting_center.util.AESHelper;
 import com.example.counting_center.util.ErrorMessageCode;
 import com.example.counting_center.util.Keys;
 import com.example.counting_center.util.RSA;
-import com.example.counting_center.util.Keys;
 import com.example.counting_center.web_clients.BallotIdVerificationWebClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class VoteController {
 
     @Autowired
     private SessionRepository sessionRepository;
+
+    @Autowired
+    private ElectionRepository electionRepository;
 
     @Autowired
     private BallotIdVerificationWebClient ballotIdVerificationWebClient;
@@ -67,8 +71,7 @@ public class VoteController {
      */
     @PostMapping("/vote")
     ResponseEntity<?> votePost(@Valid @RequestBody EncryptedVoteRequest encryptedVoteRequest) throws IOException, CertificateException, NoSuchAlgorithmException, InvalidKeySpecException {
-<<<<<<< Updated upstream
-=======
+
         try{
             Optional<Election> election = electionRepository.findById(Long.valueOf("1"));
             if(election.isEmpty()){
@@ -84,8 +87,6 @@ public class VoteController {
 
         }
 
-
->>>>>>> Stashed changes
         log.info("vote POST -> {}", encryptedVoteRequest);
 
         String msg;
