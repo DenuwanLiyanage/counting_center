@@ -13,7 +13,7 @@ public class BallotIdVerificationWebClient {
        WebClient webClient = WebClient.create("http://localhost:8080");
 
       return webClient.post()
-               .uri("/ballot-id")
+               .uri("/counting")
                .body(Mono.just(validateBallotIdRequest), ValidateBallotIdRequest.class)
                .retrieve()
                .bodyToMono(ValidateBallotIdResponse.class)

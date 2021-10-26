@@ -29,7 +29,14 @@ public class VoteController {
      */
     @GetMapping("/votes")
     ResponseEntity<?> voteGet() {
-        return ResponseEntity.status(200).body(repository.findAll());
+        try{
+            return ResponseEntity.status(200).body(repository.findAll());
+        }catch (Exception e){
+            log.error("Can't Get all Votes");
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
+        }
+
     }
 
 
@@ -41,14 +48,12 @@ public class VoteController {
      */
     @PostMapping("/vote")
     ResponseEntity<?> votePost(@Valid @RequestBody String msg) {
-        log.info("vote POST -> {}", msg);
-
         ObjectMapper objectMapper = new ObjectMapper();
         VoteRequest voteRequest = new VoteRequest();
         try{
             voteRequest = objectMapper.readValue(msg,VoteRequest.class);
         } catch (Exception e){
-            log.info("unable to convert to VoteRequest ", e);
+            log.error("unable to convert to VoteRequest ");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INVALID_REQUEST));
         }
@@ -66,6 +71,7 @@ public class VoteController {
         try {
             vote = repository.save(vote);
         } catch (Exception e) {
+            log.error("unable to save Vote");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
@@ -81,6 +87,7 @@ public class VoteController {
 //        try{
 //            ValidateBallotIdResponse response1 = ballotIdVerificationWebClient.getVerifiedBallotId(request);
 //        }catch (Exception e){
+//        log.info("unable to Connect to voting center");
 //            return ResponseEntity.internalServerError()
 //                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
 //        }
@@ -98,6 +105,7 @@ public class VoteController {
         try {
             vote = repository.save(vote);
         } catch (Exception e) {
+            log.error("unable to save Vote");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }

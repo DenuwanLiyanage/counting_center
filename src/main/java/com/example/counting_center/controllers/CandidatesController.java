@@ -26,7 +26,7 @@ public class CandidatesController {
         try {
              candidate = candidateRepository.save(candidate);
         } catch (Exception e) {
-            log.info("error ",e);
+            log.error("Can't Save the Candidate");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
@@ -36,6 +36,13 @@ public class CandidatesController {
 
     @GetMapping("/all-candidates")
     ResponseEntity<?> getCandidates() {
-        return ResponseEntity.status(200).body(candidateRepository.findAll());
+        try{
+            return ResponseEntity.status(200).body(candidateRepository.findAll());
+        }catch (Exception e){
+            log.error("Can't Get all Candidates");
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
+        }
+
     }
 }
