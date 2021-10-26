@@ -30,6 +30,7 @@ public class VoteController {
     @GetMapping("/votes")
     ResponseEntity<?> voteGet() {
         try{
+            log.info("Getting all votes");
             return ResponseEntity.status(200).body(repository.findAll());
         }catch (Exception e){
             log.error("Can't Get all Votes");
@@ -114,7 +115,7 @@ public class VoteController {
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
-
+        log.info("Successfully Voted");
         return ResponseEntity.ok().body(new VoteSuccessResponse(vote.getReceipt()));
     }
 

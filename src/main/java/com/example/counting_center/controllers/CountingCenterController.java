@@ -1,9 +1,7 @@
 package com.example.counting_center.controllers;
 
-import com.example.counting_center.entities.Candidate;
 import com.example.counting_center.entities.ElectionResult;
 import com.example.counting_center.messages.ErrorResponse;
-import com.example.counting_center.repositories.CandidateRepository;
 import com.example.counting_center.repositories.ResultRepository;
 import com.example.counting_center.repositories.VoteRepository;
 import com.example.counting_center.util.ErrorMessageCode;
@@ -22,8 +20,6 @@ import java.util.List;
 @RequestMapping("/counting-center")
 public class CountingCenterController {
 
-    @Autowired
-    private CandidateRepository candidateRepository;
 
     @Autowired
     private VoteRepository voteRepository;
@@ -38,11 +34,12 @@ public class CountingCenterController {
     }
 
     @PostMapping("/end-voting")
-    ResponseEntity<?> endVoting(@RequestBody String msg) {
+    ResponseEntity<?> endVoting() {
         // TODO: end accepting votes
-        List<Candidate> candidateList;
+
+        List<String> candidateList;
         try{
-            candidateList = candidateRepository.findAll();
+            candidateList = voteRepository.getAllByVotedForGroup();
         }catch (Exception e){
             log.error("Can't Get all Candidates");
             return ResponseEntity.internalServerError()
@@ -52,8 +49,8 @@ public class CountingCenterController {
         try {
             for (int i = 0; i < candidateList.size(); i++) {
                 ElectionResult electionResult = new ElectionResult();
-                Long count = voteRepository.countAllByVotedForAndAcceptedTrue(candidateList.get(i).getId());
-                electionResult.setCandidateID(candidateList.get(i).getId());
+                Long count = voteRepository.countAllByVotedForAndAcceptedTrue(candidateList.get(i));
+                electionResult.setCandidateID(candidateList.get(i));
                 electionResult.setCount(count);
                 resultRepository.save(electionResult);
             }
@@ -63,6 +60,7 @@ public class CountingCenterController {
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
         try{
+            log.info("Getting Results");
             return ResponseEntity.status(200).body(resultRepository.findAll());
         }catch (Exception e){
             log.error("Can't Get all Results");
