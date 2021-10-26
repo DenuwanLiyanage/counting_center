@@ -23,38 +23,44 @@ import java.security.spec.PKCS8EncodedKeySpec;
 @Component
 @NoArgsConstructor
 public class Keys {
-    private final String SIGN_CERTIFICATE_PATH = "keys/sign/certificate.crt";
-    private final String ENCRYPT_CERTIFICATE_PATH = "keys/encrypt/certificate.crt";
+    private static final String SIGN_CERTIFICATE_PATH = "keys/sign/certificate.crt";
+    private static final String ENCRYPT_CERTIFICATE_PATH = "keys/encrypt/certificate.crt";
+    private static final String VOTING_CENTER_CERTIFICATE_PATH = "keys/votingcentersign/certificate.crt";
 
-    private final String SIGN_PRIVATE_KEY_PATH = "keys/sign/private.der";
-    private final String ENCRYPT_PRIVATE_KEY_PATH = "keys/encrypt/private.der";
+    private static final String SIGN_PRIVATE_KEY_PATH = "keys/sign/private.der";
+    private static final String ENCRYPT_PRIVATE_KEY_PATH = "keys/encrypt/private.der";
 
 
-    public Certificate getSignCertificate() throws FileNotFoundException, CertificateException {
+    public static Certificate getSignCertificate() throws FileNotFoundException, CertificateException {
         return getCertificate(SIGN_CERTIFICATE_PATH);
     }
 
-    public Certificate getEncryptCertificate() throws FileNotFoundException, CertificateException {
+    public static Certificate getEncryptCertificate() throws FileNotFoundException, CertificateException {
         return getCertificate(ENCRYPT_CERTIFICATE_PATH);
     }
 
-    public String getSignCertificateString() throws IOException {
+    public static Certificate getVotingCenterCertificate() throws IOException, CertificateException {
+        return getCertificate(VOTING_CENTER_CERTIFICATE_PATH);
+    }
+
+    public static String getSignCertificateString() throws IOException {
         return getCertificateString(SIGN_CERTIFICATE_PATH);
     }
 
-    public String getEncryptCertificateString() throws IOException {
+    public static String getEncryptCertificateString() throws IOException {
         return getCertificateString(ENCRYPT_CERTIFICATE_PATH);
     }
 
-    public RSAPrivateKey getSignPrivateKey() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+
+    public static RSAPrivateKey getSignPrivateKey() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         return getPrivateKey(SIGN_PRIVATE_KEY_PATH);
     }
 
-    public RSAPrivateKey getEncryptPrivateKey() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public static RSAPrivateKey getEncryptPrivateKey() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         return getPrivateKey(ENCRYPT_PRIVATE_KEY_PATH);
     }
 
-    private RSAPrivateKey getPrivateKey(String path) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    private static RSAPrivateKey getPrivateKey(String path) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         File file = ResourceUtils.getFile("classpath:" + path);
         byte[] privateKeyByteArray = Files.readAllBytes(file.toPath());
 
@@ -63,14 +69,14 @@ public class Keys {
         return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
     }
 
-    private Certificate getCertificate(String path) throws FileNotFoundException, CertificateException {
+    private static Certificate getCertificate(String path) throws FileNotFoundException, CertificateException {
         File file = ResourceUtils.getFile("classpath:" + path);
         FileInputStream inputStream = new FileInputStream(file);
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
         return factory.generateCertificate(inputStream);
     }
 
-    private String getCertificateString(String path) throws IOException {
+    private static String getCertificateString(String path) throws IOException {
         File file = ResourceUtils.getFile("classpath:" + path);
         return Files.readString(file.toPath());
     }
