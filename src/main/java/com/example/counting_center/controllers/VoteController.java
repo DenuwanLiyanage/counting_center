@@ -71,13 +71,18 @@ public class VoteController {
      */
     @PostMapping("/vote")
     ResponseEntity<?> votePost(@Valid @RequestBody EncryptedVoteRequest encryptedVoteRequest) throws IOException, CertificateException, NoSuchAlgorithmException, InvalidKeySpecException {
+        try{
+            Optional<Election> election = electionRepository.findById(Long.valueOf("1"));
+            if(election.isEmpty()){
+                return ResponseEntity.badRequest().body(new ErrorResponse(ErrorMessageCode.VOTING_NOT_ALLOWED));
+            }else if(!election.get().isCanVote()){
+                return ResponseEntity.badRequest().body(new ErrorResponse(ErrorMessageCode.VOTING_NOT_ALLOWED));
+            }
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(new ErrorResponse(ErrorMessageCode.VOTING_NOT_ALLOWED));
 
-        Optional<Election> election = electionRepository.findById(Long.valueOf("1"));
-        if(election.isEmpty()){
-            return ResponseEntity.badRequest().body(new ErrorResponse(ErrorMessageCode.INVALID_SESSION_KEY));
-        }else if(!election.get().isCanVote()){
-            return ResponseEntity.badRequest().body(new ErrorResponse(ErrorMessageCode.INVALID_SESSION_KEY));
         }
+
 
         log.info("vote POST -> {}", encryptedVoteRequest);
 
