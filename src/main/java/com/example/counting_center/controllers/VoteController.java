@@ -121,7 +121,7 @@ public class VoteController {
         ValidateBallotIdRequest request = new ValidateBallotIdRequest(vote.getBallotId());
         ValidateBallotIdResponse response = new ValidateBallotIdResponse(vote.getBallotId(), "1231412");
 //        try{
-//            ValidateBallotIdResponse response1 = ballotIdVerificationWebClient.getVerifiedBallotId(request);
+//            ValidateBallotIdResponse response = ballotIdVerificationWebClient.getVerifiedBallotId(request);
 //        }catch (Exception e){
 //        log.info("unable to Connect to voting center");
 //            return ResponseEntity.internalServerError()
