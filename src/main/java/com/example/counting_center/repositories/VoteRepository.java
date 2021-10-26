@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface VoteRepository extends JpaRepository<Vote, Long> {
 
     Long countAllByVotedForAndAcceptedTrue(String votedFor);
+    Long countAllByBallotIdAndAcceptedTrue(String ballotID);
 }
