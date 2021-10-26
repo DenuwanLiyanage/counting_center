@@ -47,10 +47,10 @@ public class VoteController {
      */
     @GetMapping("/votes")
     ResponseEntity<?> voteGet() {
-        try{
+        try {
             log.info("Getting all votes");
             return ResponseEntity.status(200).body(voteRepository.findAll());
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Can't Get all Votes");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
@@ -93,7 +93,7 @@ public class VoteController {
                     .body(new ErrorResponse(ErrorMessageCode.INVALID_REQUEST));
         }
 
-        if (isAccepted(voteRequest.getBallotID())){
+        if (isAccepted(voteRequest.getBallotID())) {
             log.error("Cannot vote for this ballot ID");
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(ErrorMessageCode.INVALID_REQUEST));
@@ -118,10 +118,8 @@ public class VoteController {
                     .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
         }
 
-        // TODO: send ballotId to voting center and check its status
         ValidateBallotIdRequest request = new ValidateBallotIdRequest(vote.getBallotId());
         ValidateBallotIdResponse response = new ValidateBallotIdResponse(vote.getBallotId(), "1231412");
-        // TODO: Webclient done. Have to test
 //        try{
 //            ValidateBallotIdResponse response1 = ballotIdVerificationWebClient.getVerifiedBallotId(request);
 //        }catch (Exception e){
@@ -129,14 +127,15 @@ public class VoteController {
 //            return ResponseEntity.internalServerError()
 //                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
 //        }
-
-
-        // TODO: validate response
-        boolean isValidBallotID = true;
-        if (!isValidBallotID) {
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(ErrorMessageCode.INVALID_BALLOT_ID));
-        }
+//        boolean isValidBallotID = rsa.varifySignature(
+//                response.getSignedBallotId(),
+//                voteRequest.getBallotID(),
+//                Keys.getVotingCenterCertificate()
+//        );
+//        if (!isValidBallotID) {
+//            return ResponseEntity.badRequest()
+//                    .body(new ErrorResponse(ErrorMessageCode.INVALID_BALLOT_ID));
+//        }
 
         String receipt = rsa.signMessage(response.getSignedBallotId());
         vote.setAccepted(true);
@@ -165,8 +164,8 @@ public class VoteController {
         return ResponseEntity.ok().body("");
     }
 
-    boolean isAccepted(String ballotID){
-        if(voteRepository.countAllByBallotIdAndAcceptedTrue(ballotID) == 0) {
+    boolean isAccepted(String ballotID) {
+        if (voteRepository.countAllByBallotIdAndAcceptedTrue(ballotID) == 0) {
             return false;
         }
         return true;
