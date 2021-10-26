@@ -22,6 +22,7 @@ public class Vote {
     private boolean accepted;
 
     @Setter
+    @Column(columnDefinition="TEXT")
     private String receipt;
 
     public Vote() {
