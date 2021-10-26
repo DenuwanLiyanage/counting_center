@@ -8,16 +8,12 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @ToString
-public class VoteRequest {
+public class EncryptedVoteRequest {
     @NotNull
     @NotBlank
-    private String ballotID;
+    private String sessionKey;
 
     @NotNull
     @NotBlank
-    private String voteFor;
-
-    @NotNull
-    @NotBlank
-    private String signature;
+    private String message;
 }

@@ -2,7 +2,6 @@ package com.example.counting_center.util;
 
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.BadPaddingException;
@@ -13,11 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
-import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -31,13 +26,10 @@ import java.util.Base64;
 @NoArgsConstructor
 public class RSA {
 
-    @Autowired
-    private Keys keys;
-
     public String encrypt(Certificate certificate, String message) {
         RSAPublicKey publicKey = (RSAPublicKey) certificate.getPublicKey();
 
-        BigInteger integerMessage = new BigInteger(message);
+        BigInteger integerMessage = new BigInteger(message.getBytes(StandardCharsets.UTF_8));
         byte[] encryptedBytes = integerMessage.modPow(publicKey.getPublicExponent(), publicKey.getModulus()).toByteArray();
 
         return Base64.getEncoder().encodeToString(encryptedBytes);
@@ -45,7 +37,7 @@ public class RSA {
 
     public String decrypt(String encryptedMessage) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
-        RSAPrivateKey privateKey = keys.getEncryptPrivateKey();
+        RSAPrivateKey privateKey = Keys.getEncryptPrivateKey();
         byte[] encryptedBytes = Base64.getDecoder().decode(encryptedMessage);
         BigInteger integer = new BigInteger(encryptedBytes);
         byte[] decryptedBytes = integer.modPow(privateKey.getPrivateExponent(), privateKey.getModulus()).toByteArray();
@@ -54,7 +46,7 @@ public class RSA {
     }
 
     public String signMessage(String message) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        RSAPrivateKey signingKey = keys.getSignPrivateKey();
+        RSAPrivateKey signingKey = Keys.getSignPrivateKey();
 
         String hashedMessage = getSHA256Hash(message);
         byte[] hashedBytes = hashedMessage.getBytes(StandardCharsets.UTF_8);
@@ -65,10 +57,10 @@ public class RSA {
         return Base64.getEncoder().encodeToString(signBytes);
     }
 
-    public boolean varifySignature(String message, Certificate signingCertificate) {
+    public boolean varifySignature(String signature, String message, Certificate signingCertificate) {
         RSAPublicKey publicVarifyKey = (RSAPublicKey) signingCertificate.getPublicKey();
 
-        byte[] decodeSign = Base64.getDecoder().decode(message);
+        byte[] decodeSign = Base64.getDecoder().decode(signature);
         BigInteger bigInteger = new BigInteger(decodeSign);
         byte[] varifyBytes = bigInteger.modPow(publicVarifyKey.getPublicExponent(), publicVarifyKey.getModulus()).toByteArray();
 

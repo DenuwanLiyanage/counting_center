@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor
 public class Session {
-    private @Id
-    @GeneratedValue
-    Long id;
+     @Id @GeneratedValue(generator = "UUID")
+     private UUID id;
 
     private String key;
 

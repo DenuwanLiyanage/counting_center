@@ -6,24 +6,23 @@ import com.example.counting_center.repositories.SessionRepository;
 import com.example.counting_center.util.ErrorMessageCode;
 import com.example.counting_center.util.Keys;
 import com.example.counting_center.util.RSA;
-import com.example.counting_center.util.AESHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequestMapping("/certificate")
 public class CertificateController {
-    private final Keys keys;
     private final RSA rsa;
 
     @Autowired
     private SessionRepository sessionRepository;
 
     CertificateController() {
-        this.keys = new Keys();
         this.rsa = new RSA();
     }
 
@@ -32,7 +31,7 @@ public class CertificateController {
 
         String certificate;
         try {
-            certificate = keys.getSignCertificateString();
+            certificate = Keys.getSignCertificateString();
         } catch (Exception e) {
             log.error("Get signing cert error", e);
             return ResponseEntity.status(500)
@@ -45,7 +44,7 @@ public class CertificateController {
     ResponseEntity<?> getEncryptCertificate() {
         String certificate;
         try {
-            certificate = keys.getEncryptCertificateString();
+            certificate = Keys.getEncryptCertificateString();
         } catch (Exception e) {
             log.error("Get signing cert error", e);
             return ResponseEntity.status(500)
@@ -59,12 +58,12 @@ public class CertificateController {
         log.info("start-session msg={}", msg);
         try {
             String key = rsa.decrypt(msg);
+            log.info("decrypted key={}", key);
             Session session = new Session(key);
             session = sessionRepository.save(session);
 
-            long id = session.getId();
-            String response = AESHelper.encrypt(key, String.valueOf(id));
-            return ResponseEntity.ok().body(response);
+            UUID id = session.getId();
+            return ResponseEntity.ok().body(id);
         } catch (Exception e) {
             log.error("start-session error", e);
             return ResponseEntity.badRequest().body("Request Failed");
