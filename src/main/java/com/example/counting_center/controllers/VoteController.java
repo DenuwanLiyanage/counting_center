@@ -59,7 +59,11 @@ public class VoteController {
         }
 
 
-
+        if (isAccepted(voteRequest.getMessage().getBallotID())){
+            log.error("Cannot vote for this ballot ID");
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse(ErrorMessageCode.INVALID_REQUEST));
+        }
         // TODO: validate message signature
         boolean isSignatureValid = true;
         if (!isSignatureValid) {
@@ -91,6 +95,7 @@ public class VoteController {
 //            return ResponseEntity.internalServerError()
 //                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
 //        }
+
 
         // TODO: validate response
         boolean isValidBallotID = true;
@@ -136,6 +141,12 @@ public class VoteController {
         // TODO: SSL implementation
     }
 
+    boolean isAccepted(String ballotID){
+        if(repository.countAllByBallotIdAndAcceptedTrue(ballotID) == 0) {
+            return false;
+        }
+        return true;
+    }
     String signMessage(String message) {
         // TODO: sign message
         return message;
