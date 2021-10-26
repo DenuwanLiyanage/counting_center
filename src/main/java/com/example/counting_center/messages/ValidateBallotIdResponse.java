@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class ValidateBallotIdResponse {
-   private String ballotId;
+   private String ballotID;
    private String signedBallotId;
 
-   public ValidateBallotIdResponse(String ballotId, String signedBallotId) {
-      this.ballotId = ballotId;
+   public ValidateBallotIdResponse(String ballotID, String signedBallotId) {
+      this.ballotID = ballotID;
       this.signedBallotId = signedBallotId;
    }
 }

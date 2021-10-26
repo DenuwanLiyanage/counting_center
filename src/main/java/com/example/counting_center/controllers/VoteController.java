@@ -1,20 +1,15 @@
 package com.example.counting_center.controllers;
 
-import com.example.counting_center.messages.*;
 import com.example.counting_center.entities.Vote;
+import com.example.counting_center.messages.*;
 import com.example.counting_center.repositories.VoteRepository;
 import com.example.counting_center.util.ErrorMessageCode;
-
 import com.example.counting_center.web_clients.BallotIdVerificationWebClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 
@@ -82,12 +77,13 @@ public class VoteController {
         ValidateBallotIdRequest request = new ValidateBallotIdRequest(vote.getBallotId());
         ValidateBallotIdResponse response = new ValidateBallotIdResponse(vote.getBallotId(), "1231412");
 
-        try{
-            ValidateBallotIdResponse response1 = ballotIdVerificationWebClient.getVerifiedBallotId(request);
-        }catch (Exception e){
-            return ResponseEntity.internalServerError()
-                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
-        }
+        // TODO: Webclient done. Have to test
+//        try{
+//            ValidateBallotIdResponse response1 = ballotIdVerificationWebClient.getVerifiedBallotId(request);
+//        }catch (Exception e){
+//            return ResponseEntity.internalServerError()
+//                    .body(new ErrorResponse(ErrorMessageCode.INTERNAL_SERVER_ERROR));
+//        }
 
         // TODO: validate response
         boolean isValidBallotID = true;

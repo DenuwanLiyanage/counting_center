@@ -4,6 +4,7 @@ import com.example.counting_center.messages.ValidateBallotIdRequest;
 import com.example.counting_center.messages.ValidateBallotIdResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Component
 public class BallotIdVerificationWebClient {
@@ -13,6 +14,7 @@ public class BallotIdVerificationWebClient {
 
       return webClient.post()
                .uri("/ballot-id")
+               .body(Mono.just(validateBallotIdRequest), ValidateBallotIdRequest.class)
                .retrieve()
                .bodyToMono(ValidateBallotIdResponse.class)
                .block();
