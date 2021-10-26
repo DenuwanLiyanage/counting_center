@@ -1,7 +1,9 @@
 package com.example.counting_center.controllers;
 
+import com.example.counting_center.entities.Election;
 import com.example.counting_center.entities.ElectionResult;
 import com.example.counting_center.messages.ErrorResponse;
+import com.example.counting_center.repositories.ElectionRepository;
 import com.example.counting_center.repositories.ResultRepository;
 import com.example.counting_center.repositories.VoteRepository;
 import com.example.counting_center.util.ErrorMessageCode;
@@ -27,16 +29,20 @@ public class CountingCenterController {
     @Autowired
     private ResultRepository resultRepository;
 
+    @Autowired
+    private ElectionRepository electionRepository;
+
     @PostMapping("/start-voting")
-    ResponseEntity<?> startVoting(@RequestBody String msg) {
+    ResponseEntity<?> startVoting() {
         // TODO: start accepting votes
+        electionRepository.save(new Election(Long.valueOf("1"),true));
         return ResponseEntity.status(200).body("success");
     }
 
     @PostMapping("/end-voting")
     ResponseEntity<?> endVoting() {
         // TODO: end accepting votes
-
+        electionRepository.save(new Election(Long.valueOf("1"),false));
         List<String> candidateList;
         try{
             candidateList = voteRepository.getAllByVotedForGroup();
